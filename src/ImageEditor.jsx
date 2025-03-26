@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import Poster1 from "../src/assets/poster1.jpeg";
-import Poster2 from "../src/assets/poster2.jpeg";
-import Poster3 from "../src/assets/poster3.jpeg";
+import Poster1 from "../src/assets/poster1.jpg";
+import Poster2 from "../src/assets/poster2.jpg";
+import Poster3 from "../src/assets/poster3.jpg";
+import Poster4 from "../src/assets/poster4.jpg";
+import Poster5 from "../src/assets/poster5.jpg";
 
 const ImageForm = () => {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [role, setrole] = useState("");
   const [selectedImage, setSelectedImage] = useState(Poster1); // Default image
   const canvasRef = useRef(null);
   const downloadBtnRef = useRef(null);
@@ -19,21 +21,17 @@ const ImageForm = () => {
     document.head.appendChild(link);
   }, []);
 
-  // Update image with text on the canvas
   const updateImageWithText = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // Create a new image element
     const img = new Image();
-    img.src = selectedImage; // Use selected or default image
+    img.src = selectedImage;
 
     img.onload = function () {
-      // Set canvas dimensions to 1080x1080
       canvas.width = 1080;
       canvas.height = 1080;
 
-      // Calculate scaling factor to fit the image within 1080x1080 canvas
       const scale = Math.min(
         canvas.width / img.width,
         canvas.height / img.height
@@ -41,29 +39,59 @@ const ImageForm = () => {
       const x = (canvas.width - img.width * scale) / 2;
       const y = (canvas.height - img.height * scale) / 2;
 
-      // Draw the scaled image onto the canvas
       ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
-      // Set text properties for the name using Montserrat
-      ctx.font = "500 38px 'Montserrat'"; // Change font to Montserrat
-      ctx.fillStyle = "#f4d081"; // Text color for name
-      ctx.textAlign = "center"; // Center the text horizontally
-      ctx.textBaseline = "middle"; // Vertically align the text to the middle
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
 
-      // Calculate the bottom center Y position for the text
-      const bottomY = canvas.height - 50; // 50px above the bottom
+      let nameX, nameY, roleX, roleY, nameColor, roleColor;
 
-      // Add name at the bottom center
-      ctx.fillText(name, canvas.width / 2, bottomY - 40); // Place the name slightly above the bottom
+      // Adjust text positions and colors based on the selected image
+      if (selectedImage === Poster1) {
+        nameX = canvas.width / 2;
+        nameY = canvas.height - 100;
+        roleX = canvas.width / 2;
+        roleY = canvas.height - 55;
+        nameColor = "#F4D081";
+        roleColor = "white";
+      } else if (selectedImage === Poster2) {
+        nameX = canvas.width / 2 - -170; // Shift text left
+        nameY = canvas.height - 200; //shift text top
+        roleX = canvas.width / 2 - -170;
+        roleY = canvas.height - 160;
+        nameColor = "#E30613";
+        roleColor = "#042B60";
+      } else if (selectedImage === Poster3) {
+        nameX = canvas.width / 2 + 280; // Shift text right
+        nameY = canvas.height - 260; //shift text top
+        roleX = canvas.width / 2 + 280;
+        roleY = canvas.height - 220;
+        nameColor = "#fff";
+        roleColor = "#fff";
+      } else if (selectedImage === Poster4) {
+        nameX = canvas.width / 2 - 280; // Shift text left
+        nameY = canvas.height - 260; //shift text top
+        roleX = canvas.width / 2 - 285;
+        roleY = canvas.height - 220;
+        nameColor = "#1061A3";
+        roleColor = "#1B1B1B";
+      } else if (selectedImage === Poster5) {
+        nameX = canvas.width / 2;
+        nameY = canvas.height - 240; //shift text top
+        roleX = canvas.width / 2;
+        roleY = canvas.height - 200;
+        nameColor = "#1762A6";
+        roleColor = "#1B1B1B";
+      }
 
-      // Set text properties for the phone number using Montserrat
-      ctx.font = "24px 'Montserrat'"; // Different font style and size for phone number
-      ctx.fillStyle = "white"; // Text color for phone number
+      ctx.font = "500 38px 'Montserrat'";
+      ctx.fillStyle = nameColor;
+      ctx.fillText(name, nameX, nameY);
 
-      // Add phone number below the name
-      ctx.fillText(phone, canvas.width / 2, bottomY); // Place the phone number below the name
+      ctx.font = "24px 'Montserrat'";
+      ctx.fillStyle = roleColor;
+      ctx.fillText(role.toUpperCase(), roleX, roleY);
 
-      // Show the download button after the image is updated
       downloadBtnRef.current.style.display = "inline-block";
     };
   };
@@ -83,6 +111,10 @@ const ImageForm = () => {
       setSelectedImage(Poster2);
     } else if (e.target.value === "poster3") {
       setSelectedImage(Poster3);
+    } else if (e.target.value === "poster4") {
+      setSelectedImage(Poster4);
+    } else if (e.target.value === "poster5") {
+      setSelectedImage(Poster5);
     }
   };
 
@@ -101,7 +133,7 @@ const ImageForm = () => {
   // Update the image when the selected image or form changes
   useEffect(() => {
     updateImageWithText();
-  }, [selectedImage, name, phone]);
+  }, [selectedImage, name, role]);
 
   return (
     <div>
@@ -118,13 +150,13 @@ const ImageForm = () => {
         />
         <br />
         <br />
-        <label htmlFor="phone">Phone Number: </label>
+        <label htmlFor="role">Role: </label>
         <input
           type="text"
-          id="phone"
-          name="phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          id="role"
+          name="role"
+          value={role}
+          onChange={(e) => setrole(e.target.value)}
           required
         />
         <br />
@@ -146,12 +178,18 @@ const ImageForm = () => {
             ? "poster1"
             : selectedImage === Poster2
             ? "poster2"
-            : "poster3"
+            : selectedImage === Poster3
+            ? "poster3"
+            : selectedImage === Poster4
+            ? "poster4"
+            : "poster5"
         }
       >
         <option value="poster1">Ramadan Poster1</option>
         <option value="poster2">Ramadan Poster2</option>
         <option value="poster3">Ramadan Poster3</option>
+        <option value="poster4">Ramadan Poster4</option>
+        <option value="poster5">Ramadan Poster5</option>
       </select>
       <br />
       <br />
